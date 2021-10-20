@@ -1,4 +1,5 @@
 USE inventory;
+DROP VIEW IF EXISTS Groceries;
 CREATE VIEW Groceries AS (SELECT 
 	Item.name AS Name, 
 	Item.qty AS Quantity,  
@@ -6,7 +7,7 @@ CREATE VIEW Groceries AS (SELECT
 	Item.units AS Units, 
 	Location.name AS Location, 
 	Item.expirationDate AS ExpirationDate, 
-	Item.public AS Public
+	IF(Item.public, 'Yes', 'No') AS Public
 FROM
 	Item INNER JOIN 
 	Location ON Item.location = Location.locationID LEFT JOIN (

@@ -1,6 +1,53 @@
+:root {
+	--slategray: #2E2E2E;
+	--darkgray: #4A4A4A;
+	--medgray: #666666;
+	--lightgray: #AAAAAA;
+	--brightgray: #DDDDDD;
+	--darkpastelblue: #080845;
+	--medpastelblue: #0808B0;
+	--pastelblue: #0D0D8F;
+	--bluesky: #92D1E7;
+	
+	--heading: var(--darkpastelblue);
+	--border: var(--bluesky);
+}
+
 h1 {
-	border: 2px #eee solid;
-	color: brown;
+	color: var(--heading);
 	text-align: center;
 	padding: 10px;
 }
+
+.styled-table {
+	border-collapse: collapse;
+	margin: 25px 0;
+	font-size: 0.9em;
+	font-family: sans-serif;
+	min-width: 400px;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+	border: 2px solid var(--border);
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.styled-table thead tr {
+	background-color: var(--border);
+	color: var(--heading);
+	text-align: center;
+}
+
+.styled-table th,
+.styled-table td {
+	padding: 12px 15px;
+}
+
+.styled-table tbody tr {
+	border-bottom: 1px solid var(--pastelblue);
+	text-align: center;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+	background-color: var(--brightgray);
+}
+

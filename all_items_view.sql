@@ -1,4 +1,5 @@
 USE inventory;
+DROP VIEW IF EXISTS AllItems;
 CREATE VIEW AllItems AS (SELECT 
 	Item.name AS Name, 
 	Type.name AS Type,
@@ -7,7 +8,7 @@ CREATE VIEW AllItems AS (SELECT
 	Item.units AS Units, 
 	Location.name AS Location, 
 	Item.expirationDate AS ExpirationDate, 
-	Item.public AS Public
+	IF(Item.public, 'Yes', 'No') AS Public
 FROM
 	Item INNER JOIN 
 	Location ON Item.location = Location.locationID LEFT JOIN (

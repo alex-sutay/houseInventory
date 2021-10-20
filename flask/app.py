@@ -1,11 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, session
 import mysql.connector
 from mysql.connector import Error
-from config import sql_host, sql_user, sql_pass, sql_db
+from config import sql_host, sql_user, sql_pass, sql_db, secret_key
 
 
 app = Flask(__name__)
-# app.config['EXPLAIN_TEMPLATE_LOADING'] = True
+app.secret_key = secret_key
 
 
 def create_db_connection(hostname, username, password, db):
@@ -42,6 +42,18 @@ def index():
 def groceries():
     res, names = get_table('Groceries')
     return render_template('show_table.html', table_name='Groceries', results=res, columns=names)
+
+
+@app.route('/all')
+def all_items():
+    res, names = get_table('AllItems')
+    return render_template('show_table.html', table_name='All Items', results=res, columns=names)
+
+
+@app.route('/projects')
+def projects():
+    res, names = get_table('ActiveProjects')
+    return render_template('show_table.html', table_name='Active Projects', results=res, columns=names)
 
 
 if __name__ == '__main__':
