@@ -19,6 +19,21 @@ h1 {
 	padding: 10px;
 }
 
+.form-wrapper {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+h2 {
+	color: var(--heading);
+	text-align: center;
+	padding: 10px;
+}
+
+.form-field {
+	color: var(--pastelblue);
+}
+
 .styled-table {
 	border-collapse: collapse;
 	margin: 25px 0;

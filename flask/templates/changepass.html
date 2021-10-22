@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+	<h1>{% block title %} Welcome to Xoriat {% endblock %}</h1>
+
+	<div class="form-wrapper">
+		<h2 class="title">Change your password</h2>
+
+		<form method="POST" action="{{ url_for('change_pass_post') }}">
+
+			<fieldset class="form-field">
+				{{ form.curr_pass.label }}
+				{{ form.curr_pass(size=20) }}
+			</fieldset>
+
+			<fieldset class="form-field">
+				{{ form.new_pass.label }}
+				{{ form.new_pass }}
+			</fieldset>
+
+			<fieldset class="form-field">
+				{{ form.new_pass_conf.label }}
+				{{ form.new_pass_conf }}
+			</fieldset>
+
+			{{ form.submit }}
+
+		</form>
+	</div>
+{% endblock %}
+

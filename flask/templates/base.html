@@ -12,15 +12,6 @@
 		<title>{% block title %} {% endblock %}</title>
 	</head>
 	<body>
-		{% with messages = get_flashed_messages() %}
-			{% if messages %}
-				<ul class=flashes>
-				{% for message in messages %}
-					<li>{{ message }}</li>
-				{% endfor %}
-				</ul>
-			{% endif %}
-		{% endwith %}
 		<nav class="navbar navbar-expand-md navbar-light bg-light">
 			<a class="navbar-brand" href="{{ url_for('index')}}">Xoriat</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,7 +22,7 @@
 					{% if current_user.is_authenticated %}
 						{% if current_user.perm_level <= 3 %}
 							<li class="nav-item active">
-								<a class="nav-link" href="public">Inventory</a>
+								<a class="nav-link" href="public">Public Inventory</a>
 							</li>
 						{% endif %}
 						{% if current_user.perm_level <= 2 %}
@@ -51,6 +42,9 @@
 							</li>
 						{% endif %}
 						<li class="nav-item active">
+							<a class="nav-link" href="changepass">Change Password</a>
+						</li>
+						<li class="nav-item active">
 							<a class="nav-link" href="logout">Logout</a>
 						</li>
 					{% else %}
@@ -60,6 +54,15 @@
 					{% endif %}
 				</ul>																					              </div>
 		</nav>
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				<ul class=flashes>
+				{% for message in messages %}
+					<li>{{ message }}</li>
+				{% endfor %}
+				</ul>
+			{% endif %}
+		{% endwith %}
 		<div class="container">
 			{% block content %} {% endblock %}
 		</div>

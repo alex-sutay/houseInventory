@@ -2,7 +2,7 @@ from flask import Flask, render_template, session, request, flash, url_for, redi
 import mysql.connector
 from mysql.connector import Error
 from config import sql_host, sql_user, sql_pass, sql_db, secret_key
-from models import create_db_connection, User, users, LoginForm, ensure_auth_level, MakeUserForm
+from models import retrieve_db_query, User, users, LoginForm, ensure_auth_level, MakeUserForm, ChangePassForm
 
 
 app = Flask(__name__)
@@ -10,13 +10,7 @@ app.secret_key = secret_key
 
 
 def get_table(table):
-    conn = create_db_connection(sql_host, sql_user, sql_pass, sql_db)
-    cursor = conn.cursor()
-    cursor.execute(f'SELECT * FROM {table}')  # TODO kinda sql-injection-ish, find a better way to do this 
-    results = cursor.fetchall()
-    names = [c[0] for c in cursor.description]
-    conn.close()
-    return results, names
+    return retrieve_db_query(f'SELECT * FROM {table}')  # TODO kinda sql-injection-ish, find a better way to do this 
 
 
 @app.route('/')
@@ -71,7 +65,7 @@ def login_post():
 @ensure_auth_level(1)
 def manage_users_post():
     form = MakeUserForm()
-    if request.method == 'POST' and form.validate():
+    if request.method == 'POST':
         if form.validate():
             flash('User created successfully')
         else:
@@ -85,6 +79,30 @@ def logout():
     users.pop(session['user'])
     session.pop('user')
     return redirect(url_for('index'))
+
+
+@app.route('/changepass', methods=['GET', 'POST'])
+@ensure_auth_level(3)
+def change_pass_post():
+    form = ChangePassForm(users[session['user']])
+    if request.method == 'POST' and form.validate():
+        flash('Password updated')
+    return render_template('changepass.html', form=form)
+
+
+@app.errorhandler(401)
+def page_not_found(e):
+    return render_template('401.html'), 401
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template('500.html'), 500
 
 
 @app.context_processor

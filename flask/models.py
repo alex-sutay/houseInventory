@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, PasswordField, SubmitField, TextField
-from wtforms.validators import DataRequired, Email, EqualTo, Length
+from wtforms.validators import DataRequired, Email, EqualTo, Length, EqualTo
 from wtforms import ValidationError
 import mysql.connector
 from config import sql_host, sql_user, sql_pass, sql_db
@@ -42,6 +42,30 @@ def create_db_connection(hostname, username, password, db):
     return connection
 
 
+def execute_db_query(query, params=None):
+    conn = create_db_connection(sql_host, sql_user, sql_pass, sql_db)
+    cursor = conn.cursor()
+    if params is not None:
+        cursor.execute(query, params)
+    else:
+        cursor.execute(query)
+    conn.commit()
+    conn.close()
+
+
+def retrieve_db_query(query, params=None):
+    conn = create_db_connection(sql_host, sql_user, sql_pass, sql_db)
+    cursor = conn.cursor()
+    if params is not None:
+        cursor.execute(query) 
+    else:
+        cursor.execute(query, params)
+    results = cursor.fetchall()
+    names = [c[0] for c in cursor.description]
+    conn.close()
+    return results, names
+
+
 class User():
     def __init__(self, username):
         self.username = username
@@ -71,9 +95,12 @@ class User():
     def get_id(self):
         return self.username
 
+    def check_pass(self, password):
+        return bcrypt.checkpw(password.encode(), self.pass_hash)
+
     def authenticate(self, password):
         if self.exists:
-            self.is_authenticated = bcrypt.checkpw(password.encode(), self.pass_hash)
+            self.is_authenticated = self.check_pass(password)
         else:
             self.is_authenticated = False
         return self.is_authenticated
@@ -110,14 +137,29 @@ class MakeUserForm(FlaskForm):
         super(MakeUserForm, self).__init__(*args, **kwargs)
 
     def validate(self):
-        conn = create_db_connection(sql_host, sql_user, sql_pass, sql_db)
-        if conn is not None:
-            cursor = conn.cursor()
-            hashed = bcrypt.hashpw(self.password.data.encode(), bcrypt.gensalt())
-            cursor.execute("INSERT INTO Account (userName, type, passHash) VALUES (%s, 3, %s)", (self.username.data, hashed,))
-            conn.commit()
-            conn.close()
-            return True
-        else:
+        hashed = bcrypt.hashpw(self.password.data.encode(), bcrypt.gensalt())
+        execute_db_query("INSERT INTO Account (userName, type, passHash) VALUES (%s, 3, %s)", (self.username.data, hashed,))
+        return True
+
+
+class ChangePassForm(FlaskForm):
+    curr_pass = PasswordField('Old Password', validators=[DataRequired()])
+    new_pass = PasswordField('New Password', validators=[DataRequired()])
+    new_pass_conf = PasswordField('Confirm password', validators=[DataRequired(), EqualTo('new_pass', message='New passwords must match')])
+    submit = SubmitField('Log In')
+
+    def __init__(self, user, *args, **kwargs):
+        super(ChangePassForm, self).__init__(*args, **kwargs)
+        self.user = user
+
+    def validate(self):
+        if not self.user.exists:
             return False
+        elif not self.user.check_pass(self.curr_pass.data):
+            return False
+        else:
+            hashed = bcrypt.hashpw(self.new_pass.data.encode(), bcrypt.gensalt())
+            execute_db_query('UPDATE Account SET passHash = %s WHERE userName LIKE %s', (hashed, self.user.get_id(),))
+            return True
+
 
