@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+	<h1>{% block title %} Welcome to Xoriat {% endblock %}</h1>
+
+	<div class="form-wrapper">
+		<h2 class="title">Please log in</h2>
+
+		<form method="POST" action="{{ url_for('login_post') }}">
+
+			<fieldset class="form-field">
+				{{ form.username.label }}
+				{{ form.username(size=20) }}
+			</fieldset>
+
+			<fieldset class="form-field">
+				{{ form.password.label }}
+				{{ form.password }}
+			</fieldset>
+
+			{{ form.submit }}
+
+		</form>
+	</div>
+{% endblock %}
+
