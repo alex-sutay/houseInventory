@@ -13,6 +13,26 @@
 	--border: var(--bluesky);
 }
 
+.container {
+	padding: 10px;
+	padding-bottom: 250px;
+}
+
+.footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height:250px;
+}
+
+.message {
+	padding: 20px;
+	background-color: var(--medpastelblue);
+	color: white;
+	margin-bottom: 15px;
+	text-align: center;
+}
+
 h1 {
 	color: var(--heading);
 	text-align: center;

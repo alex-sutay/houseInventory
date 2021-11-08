@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, PasswordField, SubmitField, TextField
+from wtforms import BooleanField, PasswordField, SubmitField, TextField, SelectField, DateField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, EqualTo
 from wtforms import ValidationError
 import mysql.connector
@@ -106,7 +106,6 @@ class User():
         return self.is_authenticated
 
 
-
 class LoginForm(FlaskForm):
     username = TextField('User', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -162,4 +161,28 @@ class ChangePassForm(FlaskForm):
             execute_db_query('UPDATE Account SET passHash = %s WHERE userName LIKE %s', (hashed, self.user.get_id(),))
             return True
 
+
+class InsertItemForm(FlaskForm):
+    name_field = TextField('Name', validators=[DataRequired()])
+    type_field = SelectField(label='Type', choices=retrieve_db_query('SELECT * FROM Type;')[0], validators=[DataRequired()])
+    qty_field = TextField('Quantity')
+    units_field = TextField('Units')
+    location = SelectField(label='Location', choices=retrieve_db_query('SELECT * FROM Location;')[0], validators=[DataRequired()])
+    expire_field = DateField('Expiration Date')
+    public_field = BooleanField('Public')
+    submit = SubmitField('Create')
+
+    def __init__(self, *args, **kwargs):
+        super(InsertItemForm, self).__init__(*args, **kwargs)
+
+    def validate(self):
+        sql_string = 'INSERT INTO Item (name, type, location, public, qty, units, expirationDate) VALUES (%s, %s, %s, %s, %s, %s, %s);'
+        params = (self.name_field.data, self.type_field.data, self.location.data, self.public_field.data, self.qty_field.data, self.units_field.data, self.expire_field.data)
+        print(params)
+        try:
+            execute_db_query(sql_string, params)
+            return True
+        except Exception as e:
+            print(e)
+            return False
 

@@ -2,7 +2,7 @@ from flask import Flask, render_template, session, request, flash, url_for, redi
 import mysql.connector
 from mysql.connector import Error
 from config import sql_host, sql_user, sql_pass, sql_db, secret_key
-from models import retrieve_db_query, User, users, LoginForm, ensure_auth_level, MakeUserForm, ChangePassForm
+from models import retrieve_db_query, User, users, LoginForm, ensure_auth_level, MakeUserForm, ChangePassForm, InsertItemForm
 
 
 app = Flask(__name__)
@@ -26,11 +26,17 @@ def groceries():
     return render_template('show_table.html', table_name='Groceries', results=res, columns=names)
 
 
-@app.route('/all')
+@app.route('/all', methods=['GET', 'POST'])
 @ensure_auth_level(2)
 def all_items():
     res, names = get_table('AllItems')
-    return render_template('show_table.html', table_name='All Items', results=res, columns=names)
+    form = InsertItemForm()
+    if request.method == 'POST':
+        if form.validate():
+            flash('Item Created')
+        else:
+            flash('Item creation failed')
+    return render_template('show_table_items.html', table_name='All Items', results=res, columns=names, form=form)
 
 
 @app.route('/projects')

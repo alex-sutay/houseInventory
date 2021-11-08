@@ -1,0 +1,23 @@
+{% extends 'show_table.html' %}
+{% from "_render_field.html" import render_field %}
+
+{% block extra %}
+	<div class="form-wrapper">
+		<h2 class="title">Create new Item</h2>
+	
+		<form method="POST" action="{{ url_for('all_items') }}">
+
+			{{ render_field(form.name_field) }}
+			{{ render_field(form.type_field) }}
+			{{ render_field(form.qty_field) }}
+			{{ render_field(form.units_field) }}
+			{{ render_field(form.location) }}
+			{{ render_field(form.expire_field) }}
+			{{ render_field(form.public_field) }}
+
+			{{ form.submit }}
+
+		</form>
+	</div>
+{% endblock %}
+
