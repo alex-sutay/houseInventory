@@ -1,4 +1,7 @@
 USE inventory;
+
+DROP VIEW IF EXISTS PublicGroceries;
+
 CREATE VIEW PublicGroceries AS (SELECT 
 	Item.name AS Name, 
 	Item.qty AS Quantity,  
@@ -10,5 +13,4 @@ FROM
 	Location ON Item.location = Location.locationID INNER JOIN 
 	Type ON Item.type = Type.typeID 
 WHERE 
-	Type.name LIKE 'Groceries' AND
 	Item.public);
