@@ -29,13 +29,13 @@ def groceries():
 @app.route('/all', methods=['GET', 'POST'])
 @ensure_auth_level(2)
 def all_items():
-    res, names = get_table('AllItems')
     form = InsertItemForm()
     if request.method == 'POST':
         if form.validate():
             flash('Item Created')
         else:
             flash('Item creation failed')
+    res, names = get_table('AllItems')
     return render_template('show_table_items.html', table_name='All Items', results=res, columns=names, form=form)
 
 

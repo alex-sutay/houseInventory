@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from "_render_field.html" import render_field %}
 
 
 {% block content %}
@@ -9,15 +10,8 @@
 
 		<form method="POST" action="{{ url_for('manage_users_post') }}">
 
-			<fieldset class="form-field">
-				{{ form.username.label }}
-				{{ form.username(size=20) }}
-			</fieldset>
-
-			<fieldset class="form-field">
-				{{ form.password.label }}
-				{{ form.password }}
-			</fieldset>
+			{{ render_field(form.username) }}
+			{{ render_field(form.password) }}
 
 			{{ form.submit }}
 
