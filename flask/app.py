@@ -78,12 +78,13 @@ def login_post():
 @ensure_auth_level(1)
 def manage_users_post():
     form = MakeUserForm()
+    res, names = get_table('Users')
     if request.method == 'POST':
         if form.validate():
             flash('User created successfully')
         else:
             flash('User creation failed')
-    return render_template('manageusers.html', form=form)
+    return render_template('manageusers.html', form=form, results=res, columns=names)
 
 
 @app.route('/logout')

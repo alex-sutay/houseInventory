@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% from "_render_field.html" import render_field %}
-
+{% from "_build_table.html" import build_table %}
 
 {% block content %}
 	<h1>{% block title %} Welcome to Xoriat {% endblock %}</h1>
@@ -17,5 +17,8 @@
 
 		</form>
 	</div>
+
+	{{ build_table(columns, results) }}
+
 {% endblock %}
 
