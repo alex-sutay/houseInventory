@@ -1,7 +1,4 @@
-{% extends 'base.html' %}
-
-{% block content %}
-	<h1>{% block title %} {{ table_name }} {% endblock %}</h1>
+{% macro build_table(columns, results) %}
 	<table class="styled-table">
 		<thead>
 			<tr>
@@ -16,11 +13,8 @@
 				{% for data in row %}
 				<td>{{ data }}</td>
 				{% endfor %}
-				<td> 
 			</tr>
 			{% endfor %}
 		</tbody>
 	</table>
-	{% block extra %}{% endblock %}
-{% endblock %}
-
+{% endmacro %}

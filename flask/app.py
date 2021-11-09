@@ -23,7 +23,7 @@ def index():
 @ensure_auth_level(2)
 def groceries():
     res, names = get_table('Groceries')
-    return render_template('show_table.html', table_name='Groceries', results=res, columns=names)
+    return render_template('general_table.html', table_name='Groceries', results=res, columns=names)
 
 
 @app.route('/all', methods=['GET', 'POST'])
@@ -43,21 +43,21 @@ def all_items():
 @ensure_auth_level(2)
 def projects():
     res, names = get_table('ActiveProjects')
-    return render_template('show_table.html', table_name='Active Projects', results=res, columns=names)
+    return render_template('general_table.html', table_name='Active Projects', results=res, columns=names)
 
 
 @app.route('/easymeals')
 @ensure_auth_level(2)
 def easymeals():
     res, names = get_table('EasyMeals')
-    return render_template('show_table.html', table_name='Easy Meals', results=res, columns=names)
+    return render_template('general_table.html', table_name='Easy Meals', results=res, columns=names)
 
 
 @app.route('/public')
 @ensure_auth_level(3)
 def public_inventory():
     res, names = get_table('PublicGroceries')
-    return render_template('show_table.html', table_name='Snacks and Drinks', results=res, columns=names)
+    return render_template('general_table.html', table_name='Snacks and Drinks', results=res, columns=names)
 
 
 @app.route('/login', methods=['GET', 'POST'])

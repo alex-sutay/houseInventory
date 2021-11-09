@@ -1,7 +1,13 @@
-{% extends 'show_table.html' %}
+{% extends 'base.html' %}
 {% from "_render_field.html" import render_field %}
+{% from "_build_table.html" import build_table %}
 
-{% block extra %}
+{% block title %} {% block header %} {{ table_name }} {% endblock %} {% endblock %}
+
+{% block content %}
+
+	{{ build_table(columns, results) }}
+
 	<div class="form-wrapper">
 		<h2 class="title">Create new Item</h2>
 	
