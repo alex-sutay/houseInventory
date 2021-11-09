@@ -46,6 +46,13 @@ def projects():
     return render_template('show_table.html', table_name='Active Projects', results=res, columns=names)
 
 
+@app.route('/easymeals')
+@ensure_auth_level(2)
+def easymeals():
+    res, names = get_table('EasyMeals')
+    return render_template('show_table.html', table_name='Easy Meals', results=res, columns=names)
+
+
 @app.route('/public')
 @ensure_auth_level(3)
 def public_inventory():
