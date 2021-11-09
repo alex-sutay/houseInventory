@@ -3,7 +3,7 @@ An inventory system for my house because I feel the need to over organize everyt
 
 Essentially, I am setting up a database to hold household stock items, mostly groceries and leftovers, and then creating a web app and api to interact with and view the database, and finally a raspberry pi with a touchscreen, barcode scanner, and barcode printer so that you can easily tag and edit entries.
 
-Currently, I just setup the database.
+Currently, the database is setup and the flask app is under way.
 
 # Database Structure
 Currently, the database has 7 tables and 4 views. Of the 7 tables, 3 are used for general data storage, 2 are used for lookups, and 2 are used for auth.
