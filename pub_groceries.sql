@@ -4,7 +4,7 @@ DROP VIEW IF EXISTS PublicGroceries;
 
 CREATE VIEW PublicGroceries AS (SELECT 
 	Item.name AS Name, 
-	Item.qty AS Quantity,  
+	TRIM(Item.qty)+0 AS Quantity,  
 	Item.units AS Units, 
 	Location.name AS Location, 
 	Item.expirationDate AS ExpirationDate 

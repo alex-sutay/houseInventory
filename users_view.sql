@@ -3,6 +3,7 @@ USE inventory;
 DROP VIEW IF EXISTS Users;
 
 CREATE VIEW Users AS (SELECT
+       	Account.userID AS ID,
        	Account.userID,
        	Account.userName,
 	AccountType.name AS type,

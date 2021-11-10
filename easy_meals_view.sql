@@ -5,7 +5,7 @@ DROP VIEW IF EXISTS EasyMeals;
 CREATE VIEW EasyMeals AS (SELECT 
 	Item.name AS Name, 
 	Type.name AS Type,
-	Item.qty AS Quantity,  
+	TRIM(Item.qty)+0 AS Quantity,  
 	Item.units AS Units, 
 	Location.name AS Location, 
 	Item.expirationDate AS ExpirationDate

@@ -2,8 +2,8 @@ USE inventory;
 DROP VIEW IF EXISTS Groceries;
 CREATE VIEW Groceries AS (SELECT 
 	Item.name AS Name, 
-	Item.qty AS Quantity,  
-	IF(Resources.total IS NULL, Item.qty, (Item.qty - Resources.total)) AS QuantityUnallocated,
+	TRIM(Item.qty)+0 AS Quantity,  
+	TRIM(IF(Resources.total IS NULL, Item.qty, (Item.qty - Resources.total)))+0 AS QuantityUnallocated,
 	Item.units AS Units, 
 	Location.name AS Location, 
 	Item.expirationDate AS ExpirationDate, 

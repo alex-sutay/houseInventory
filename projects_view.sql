@@ -1,5 +1,9 @@
 USE inventory;
+
+DROP VIEW IF EXISTS ActiveProjects;
+
 CREATE VIEW ActiveProjects AS (SELECT 
+	Project.projectID AS ID,
 	Project.name AS Name, 
 	Project.expDate AS ExpectedDate,
 	Resources.needed AS ResourcesNeeded

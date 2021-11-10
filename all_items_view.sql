@@ -1,10 +1,11 @@
 USE inventory;
 DROP VIEW IF EXISTS AllItems;
 CREATE VIEW AllItems AS (SELECT 
+	Item.itemID AS ID,
 	Item.name AS Name, 
 	Type.name AS Type,
-	Item.qty AS Quantity,  
-	IF(Resources.total IS NULL, Item.qty, (Item.qty - Resources.total)) AS QuantityUnallocated,
+	TRIM(Item.qty)+0 AS Quantity,  
+	TRIM(IF(Resources.total IS NULL, Item.qty, (Item.qty - Resources.total)))+0 AS QuantityUnallocated,
 	Item.units AS Units, 
 	Location.name AS Location, 
 	Item.expirationDate AS ExpirationDate, 
