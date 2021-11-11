@@ -162,7 +162,7 @@ class ChangePassForm(FlaskForm):
             return True
 
 
-class InsertItemForm(FlaskForm):
+class EditItemForm(FlaskForm):
     name_field = TextField('Name', validators=[DataRequired()])
     type_field = SelectField(label='Type', choices=retrieve_db_query('SELECT * FROM Type;')[0], validators=[DataRequired()])
     qty_field = TextField('Quantity')
@@ -172,17 +172,36 @@ class InsertItemForm(FlaskForm):
     public_field = BooleanField('Public')
     submit = SubmitField('Create')
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs, attrs=None):
         super(InsertItemForm, self).__init__(*args, **kwargs)
+        if attrs is not None:
+            self.name_field.data = attrs['Name']
+            self.type_field.data = attrs['Type']
+            self.qty_field.data = attrs['Quantity']
+            self.units_field.data = attrs['Units']
+            self.location.data = attrs['Location']
+            self.expire_field.data = attrs['ExpirationDate']
+            self.public_field.data = attrs['Public'] == 'Yes'
 
-    def validate(self):
+    def insert(self):
         sql_string = 'INSERT INTO Item (name, type, location, public, qty, units, expirationDate) VALUES (%s, %s, %s, %s, %s, %s, %s);'
         params = (self.name_field.data, self.type_field.data, self.location.data, self.public_field.data, self.qty_field.data, self.units_field.data, self.expire_field.data)
-        print(params)
         try:
             execute_db_query(sql_string, params)
             return True
         except Exception as e:
             print(e)
             return False
+
+    def update(self):
+        sql_string = 'INSERT INTO Item (name, type, location, public, qty, units, expirationDate) VALUES (%s, %s, %s, %s, %s, %s, %s);'
+        params = (self.name_field.data, self.type_field.data, self.location.data, self.public_field.data, self.qty_field.data, self.units_field.data, self.expire_field.data)
+        try:
+            execute_db_query(sql_string, params)
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+class 
 

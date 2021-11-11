@@ -1,18 +1,38 @@
-{% macro build_table(columns, results) %}
+{% macro build_table(columns, results, buttons=False) %}
 	<table class="styled-table">
 		<thead>
 			<tr>
 				{% for name in columns %}
-				<th>{{ name }}</th>
+					{% if name != "ID" %}
+						<th>{{ name }}</th>
+					{% endif %}
 				{% endfor %}
+				{% if buttons %}
+					<th>Edit</th>
+					<th>Delete</th>
+				{% endif %}
 			</tr>
 		</thead>
 		<tbody>
 			{% for row in results %}
 			<tr>
-				{% for data in row %}
-				<td>{{ data }}</td>
+				{% for i in range(row|length) %}
+					{% if not(i == 0 and "ID" in columns) %}
+						<td>{{ row[i] }}</td>
+					{% endif %}
 				{% endfor %}
+				{% if buttons %}
+					<td>
+						<form method="POST" action="{{ url_for(request.endpoint, action='edit', id=row[0]) }}">
+							<input type="submit" value="Edit" name="edit"/>
+						</form>
+					</td>
+					<td>
+						<form method="POST" action="{{ url_for(request.endpoint, action='delete', id=row[0]) }}">
+							<input type="submit" value="Delete" name="delete"/>
+						</form>
+					</td>
+				{% endif %}
 			</tr>
 			{% endfor %}
 		</tbody>

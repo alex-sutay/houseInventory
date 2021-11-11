@@ -8,23 +8,8 @@
 	<div class="form-wrapper">
 		<h2 class="title">Change your password</h2>
 
-		<form method="POST" action="{{ url_for('change_pass_post') }}">
-			<!--
-			<fieldset class="form-field">
-				{{ form.curr_pass.label }}
-				{{ form.curr_pass(size=20) }}
-			</fieldset>
+		<form method="POST" action="{{ url_for('change_pass_post') }}" class="input-form">
 
-			<fieldset class="form-field">
-				{{ form.new_pass.label }}
-				{{ form.new_pass }}
-			</fieldset>
-
-			<fieldset class="form-field">
-				{{ form.new_pass_conf.label }}
-				{{ form.new_pass_conf }}
-			</fieldset>
-			--!>
 			<dl>
 			{{ render_field(form.curr_pass) }}
 			{{ render_field(form.new_pass) }}

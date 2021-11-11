@@ -2,7 +2,8 @@ from flask import Flask, render_template, session, request, flash, url_for, redi
 import mysql.connector
 from mysql.connector import Error
 from config import sql_host, sql_user, sql_pass, sql_db, secret_key
-from models import retrieve_db_query, User, users, LoginForm, ensure_auth_level, MakeUserForm, ChangePassForm, InsertItemForm
+from models import retrieve_db_query, execute_db_query, User, users, ensure_auth_level, \
+        LoginForm, MakeUserForm, ChangePassForm, InsertItemForm
 
 
 app = Flask(__name__)
@@ -31,10 +32,18 @@ def groceries():
 def all_items():
     form = InsertItemForm()
     if request.method == 'POST':
-        if form.validate():
-            flash('Item Created')
+        action = request.args.get('action')
+        if action == 'create':
+            if form.validate():
+                flash('Item Created')
+            else:
+                flash('Item creation failed')
+        elif action == 'delete':
+            execute_db_query('DELETE FROM Item WHERE itemID = %s', (request.args.get('id', type=int),))
+            flash('Item removed')
         else:
-            flash('Item creation failed')
+            item_id = request.args.get('id', type=int)
+            flash(f'got undefined action <{action}> with id <{item_id}>.')
     res, names = get_table('AllItems')
     return render_template('show_table_items.html', table_name='All Items', results=res, columns=names, form=form)
 
@@ -78,12 +87,20 @@ def login_post():
 @ensure_auth_level(1)
 def manage_users_post():
     form = MakeUserForm()
-    res, names = get_table('Users')
     if request.method == 'POST':
-        if form.validate():
-            flash('User created successfully')
+        action = request.args.get('action')
+        if action == 'create':
+            if form.validate():
+                flash('User created successfully')
+            else:
+                flash('User creation failed')
+        elif action == 'delete':
+            execute_db_query('DELETE FROM Account WHERE userID = %s', (request.args.get('id', type=int),))
+            flash('User removed')
         else:
-            flash('User creation failed')
+            user_id = request.args.get('id')
+            flash(f'got undefined action <{action}> with id <{user_id}>')
+    res, names = get_table('Users')
     return render_template('manageusers.html', form=form, results=res, columns=names)
 
 

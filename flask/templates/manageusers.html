@@ -8,7 +8,7 @@
 	<div class="form-wrapper">
 		<h2 class="title">Create new user</h2>
 
-		<form method="POST" action="{{ url_for('manage_users_post') }}">
+		<form method="POST" action="{{ url_for('manage_users_post', action='create') }}" class="input-form">
 
 			{{ render_field(form.username) }}
 			{{ render_field(form.password) }}
@@ -18,7 +18,8 @@
 		</form>
 	</div>
 
-	{{ build_table(columns, results) }}
+	<h2 class="title">Current Users</h2>
+	{{ build_table(columns, results, buttons=True) }}
 
 {% endblock %}
 

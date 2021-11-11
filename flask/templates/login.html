@@ -8,7 +8,7 @@
 	<div class="form-wrapper">
 		<h2 class="title">Please log in</h2>
 
-		<form method="POST" action="{{ url_for('login_post') }}">
+		<form method="POST" action="{{ url_for('login_post') }}" class="input-form">
 
 			{{ render_field(form.username) }}
 			{{ render_field(form.password) }}

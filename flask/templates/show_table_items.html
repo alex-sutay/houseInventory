@@ -6,12 +6,12 @@
 
 {% block content %}
 
-	{{ build_table(columns, results) }}
+	{{ build_table(columns, results, buttons=True) }}
 
 	<div class="form-wrapper">
 		<h2 class="title">Create new Item</h2>
 	
-		<form method="POST" action="{{ url_for('all_items') }}">
+		<form method="POST" action="{{ url_for('all_items', action='create') }}" class="input-form">
 
 			{{ render_field(form.name_field) }}
 			{{ render_field(form.type_field) }}
