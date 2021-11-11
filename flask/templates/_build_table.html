@@ -23,7 +23,7 @@
 				{% endfor %}
 				{% if buttons %}
 					<td>
-						<form method="POST" action="{{ url_for(request.endpoint, action='edit', id=row[0]) }}">
+						<form method="POST" action="{{ url_for(request.endpoint, action='spawn_edit', id=row[0]) }}">
 							<input type="submit" value="Edit" name="edit"/>
 						</form>
 					</td>

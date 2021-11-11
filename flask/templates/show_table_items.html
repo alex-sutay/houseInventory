@@ -9,21 +9,29 @@
 	{{ build_table(columns, results, buttons=True) }}
 
 	<div class="form-wrapper">
-		<h2 class="title">Create new Item</h2>
-	
-		<form method="POST" action="{{ url_for('all_items', action='create') }}" class="input-form">
-
-			{{ render_field(form.name_field) }}
-			{{ render_field(form.type_field) }}
-			{{ render_field(form.qty_field) }}
-			{{ render_field(form.units_field) }}
-			{{ render_field(form.location) }}
-			{{ render_field(form.expire_field) }}
-			{{ render_field(form.public_field) }}
-
-			{{ form.submit }}
-
+		<form method="POST" action="{{ url_for('all_items', action='spawn_create') }}">
+			<input type="submit" value="Create new item" name="spawn_create"/>
 		</form>
 	</div>
+
+	{% if form %}
+		<div class="form-wrapper">
+			<h2 class="title">Create new Item</h2>
+	
+			<form method="POST" action="{{ url_for('all_items', action=form.action, id=form.item_id) }}" class="input-form">
+
+				{{ render_field(form.name_field) }}
+				{{ render_field(form.type_field) }}
+				{{ render_field(form.qty_field) }}
+				{{ render_field(form.units_field) }}
+				{{ render_field(form.location) }}
+				{{ render_field(form.expire_field) }}
+				{{ render_field(form.public_field) }}
+
+				{{ form.submit }}
+
+			</form>
+		</div>
+	{% endif %}
 {% endblock %}
 

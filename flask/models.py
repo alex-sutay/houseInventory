@@ -57,9 +57,9 @@ def retrieve_db_query(query, params=None):
     conn = create_db_connection(sql_host, sql_user, sql_pass, sql_db)
     cursor = conn.cursor()
     if params is not None:
-        cursor.execute(query) 
+        cursor.execute(query, params) 
     else:
-        cursor.execute(query, params)
+        cursor.execute(query)
     results = cursor.fetchall()
     names = [c[0] for c in cursor.description]
     conn.close()
@@ -140,6 +140,10 @@ class MakeUserForm(FlaskForm):
         execute_db_query("INSERT INTO Account (userName, type, passHash) VALUES (%s, 3, %s)", (self.username.data, hashed,))
         return True
 
+    def clear(self):
+        self.username.data = None
+        self.password.data = None
+
 
 class ChangePassForm(FlaskForm):
     curr_pass = PasswordField('Old Password', validators=[DataRequired()])
@@ -171,17 +175,22 @@ class EditItemForm(FlaskForm):
     expire_field = DateField('Expiration Date')
     public_field = BooleanField('Public')
     submit = SubmitField('Create')
+    action = 'create'
+    item_id = 0
 
-    def __init__(self, *args, **kwargs, attrs=None):
-        super(InsertItemForm, self).__init__(*args, **kwargs)
-        if attrs is not None:
-            self.name_field.data = attrs['Name']
-            self.type_field.data = attrs['Type']
-            self.qty_field.data = attrs['Quantity']
-            self.units_field.data = attrs['Units']
-            self.location.data = attrs['Location']
-            self.expire_field.data = attrs['ExpirationDate']
-            self.public_field.data = attrs['Public'] == 'Yes'
+    def __init__(self, *args, **kwargs):
+        super(EditItemForm, self).__init__(*args, **kwargs)
+        if 'attrs' in kwargs:
+            self.action = 'edit'
+            attrs = kwargs['attrs']
+            self.item_id = attrs['itemID']
+            self.name_field.data = attrs['name']
+            self.type_field.data = attrs['type']
+            self.qty_field.data = attrs['qty']
+            self.units_field.data = attrs['units']
+            self.location.data = attrs['location']
+            self.expire_field.data = attrs['expirationDate']
+            self.public_field.data = attrs['public']
 
     def insert(self):
         sql_string = 'INSERT INTO Item (name, type, location, public, qty, units, expirationDate) VALUES (%s, %s, %s, %s, %s, %s, %s);'
@@ -193,9 +202,9 @@ class EditItemForm(FlaskForm):
             print(e)
             return False
 
-    def update(self):
-        sql_string = 'INSERT INTO Item (name, type, location, public, qty, units, expirationDate) VALUES (%s, %s, %s, %s, %s, %s, %s);'
-        params = (self.name_field.data, self.type_field.data, self.location.data, self.public_field.data, self.qty_field.data, self.units_field.data, self.expire_field.data)
+    def update(self, item_id):
+        sql_string = 'UPDATE Item SET name = %s, type = %s, location = %s, public = %s, qty = %s, units = %s, expirationDate = %s WHERE itemID = %s;'
+        params = (self.name_field.data, self.type_field.data, self.location.data, self.public_field.data, self.qty_field.data, self.units_field.data, self.expire_field.data, item_id)
         try:
             execute_db_query(sql_string, params)
             return True
@@ -203,5 +212,42 @@ class EditItemForm(FlaskForm):
             print(e)
             return False
 
-class 
+    def clear(self):
+            self.item_id = None
+            self.name_field.data = None
+            self.type_field.data = 0
+            self.qty_field.data = None
+            self.units_field.data = None
+            self.location.data = 0
+            self.expire_field.data = None
+            self.public_field.data = False
+
+class EditUserForm(FlaskForm):
+    name_field = TextField('userName', validators=[DataRequired()])
+    type_field = SelectField(label='type', choices=retrieve_db_query('SELECT * FROM AccountType;')[0], validators=[DataRequired()])
+    pass_field = PasswordField('new password')
+    submit = SubmitField('Submit')
+
+    def __init__(self, *args, **kwargs):
+        super(EditUserForm, self).__init__(*args, **kwargs)
+        if 'attrs' in kwargs:
+            attrs = kwargs['attrs']
+            self.user_id = attrs['userID']
+            self.name_field.data = attrs['userName']
+            self.type_field.data = attrs['type']
+
+    def update(self, user_id):
+        if self.pass_field.data is not None and self.pass_field.data != '':
+            hashed = bcrypt.hashpw(self.pass_field.data.encode(), bcrypt.gensalt())
+            sql_string = 'UPDATE Account SET userName = %s, type = %s, passHash = %s WHERE userID = %s;'
+            params = (self.name_field.data, self.type_field.data, hashed, user_id)
+        else:
+            sql_string = 'UPDATE Account SET userName = %s, type = %s WHERE userID = %s'
+            params = (self.name_field.data, self.type_field.data, user_id)
+        try:
+            execute_db_query(sql_string, params)
+            return True
+        except Exception as e:
+            print(e)
+            return False
 

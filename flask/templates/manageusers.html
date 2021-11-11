@@ -10,16 +10,32 @@
 
 		<form method="POST" action="{{ url_for('manage_users_post', action='create') }}" class="input-form">
 
-			{{ render_field(form.username) }}
-			{{ render_field(form.password) }}
+			{{ render_field(make_form.username) }}
+			{{ render_field(make_form.password) }}
 
-			{{ form.submit }}
+			{{ make_form.submit }}
 
 		</form>
 	</div>
 
 	<h2 class="title">Current Users</h2>
 	{{ build_table(columns, results, buttons=True) }}
+
+	{% if edit_form %}
+		<div class="form-wrapper">
+			<h2 class="title">Edit User</h2>
+	
+			<form method="POST" action="{{ url_for('manage_users_post', action='edit', id=edit_form.user_id) }}" class="input-form">
+
+				{{ render_field(edit_form.name_field) }}
+				{{ render_field(edit_form.type_field) }}
+				{{ render_field(edit_form.pass_field) }}
+
+				{{ edit_form.submit }}
+
+			</form>
+		</div>
+	{% endif %}
 
 {% endblock %}
 

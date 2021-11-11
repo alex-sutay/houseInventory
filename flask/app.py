@@ -3,7 +3,7 @@ import mysql.connector
 from mysql.connector import Error
 from config import sql_host, sql_user, sql_pass, sql_db, secret_key
 from models import retrieve_db_query, execute_db_query, User, users, ensure_auth_level, \
-        LoginForm, MakeUserForm, ChangePassForm, InsertItemForm
+        LoginForm, MakeUserForm, ChangePassForm, EditItemForm, EditUserForm
 
 
 app = Flask(__name__)
@@ -30,12 +30,28 @@ def groceries():
 @app.route('/all', methods=['GET', 'POST'])
 @ensure_auth_level(2)
 def all_items():
-    form = InsertItemForm()
+    form = None
     if request.method == 'POST':
         action = request.args.get('action')
-        if action == 'create':
-            if form.validate():
+        if action == 'spawn_create':
+            form = EditItemForm()
+        elif action == 'spawn_edit':
+            item_id = request.args.get('id', type=int)
+            res, names = retrieve_db_query('SELECT * FROM Item WHERE itemID = %s', (item_id,))
+            attrs = {names[i]: res[0][i] for i in range(len(names))}
+            form = EditItemForm(attrs=attrs)
+        elif action == 'edit':
+            form = EditItemForm()
+            if form.update(request.args.get('id', type=int)):
+                flash('Item Updated!')
+                form = None
+            else:
+                flash('Item edit failed')
+        elif action == 'create':
+            form = EditItemForm()
+            if form.insert():
                 flash('Item Created')
+                form = None
             else:
                 flash('Item creation failed')
         elif action == 'delete':
@@ -86,22 +102,35 @@ def login_post():
 @app.route('/manageusers', methods=['GET', 'POST'])
 @ensure_auth_level(1)
 def manage_users_post():
-    form = MakeUserForm()
+    make_form = MakeUserForm()
+    edit_form = None
     if request.method == 'POST':
         action = request.args.get('action')
         if action == 'create':
-            if form.validate():
+            if make_form.validate():
                 flash('User created successfully')
             else:
                 flash('User creation failed')
         elif action == 'delete':
             execute_db_query('DELETE FROM Account WHERE userID = %s', (request.args.get('id', type=int),))
             flash('User removed')
+        elif action == 'spawn_edit':
+            user_id = request.args.get('id')
+            res, names = retrieve_db_query('SELECT * FROM Account WHERE userID = %s', (user_id,))
+            attrs = {names[i]: res[0][i] for i in range(len(names))}
+            edit_form = EditUserForm(attrs=attrs)
+        elif action == 'edit':
+            edit_form = EditUserForm()
+            if edit_form.update(request.args.get('id', type=int)):
+                flash('User Updated!')
+                edit_form = None
+            else:
+                flash('User update failed')
         else:
             user_id = request.args.get('id')
             flash(f'got undefined action <{action}> with id <{user_id}>')
     res, names = get_table('Users')
-    return render_template('manageusers.html', form=form, results=res, columns=names)
+    return render_template('manageusers.html', make_form=make_form, results=res, columns=names, edit_form=edit_form)
 
 
 @app.route('/logout')
