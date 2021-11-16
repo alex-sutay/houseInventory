@@ -35,7 +35,6 @@ def create_db_connection(hostname, username, password, db):
                 passwd=password,
                 database=db,
                 auth_plugin='mysql_native_password')
-        print('Connection successful')
     except mysql.connector.Error as e:
         print(f'The error "{e}" occurred')
 
