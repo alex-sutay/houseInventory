@@ -1,7 +1,9 @@
 from flask import Flask, render_template, session, request, flash, url_for, redirect
+from flask_sslify import SSLify
 import mysql.connector
 from mysql.connector import Error
-from config import sql_host, sql_user, sql_pass, sql_db, secret_key
+from config import sql_host, sql_user, sql_pass, sql_db, secret_key, \
+        enable_ssl, cert_file, cert_key_file
 from models import retrieve_db_query, execute_db_query, User, users, ensure_auth_level, \
         LoginForm, MakeUserForm, ChangePassForm, EditItemForm, EditUserForm
 
@@ -172,5 +174,10 @@ def get_current_user():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=False)
+    if enable_ssl:
+        sslify = SSLify(app)
+        context = (cert_file, cert_key_file)
+        app.run(host='0.0.0.0', port=443, debug=False, ssl_context=context)
+    else:
+        app.run(host='0.0.0.0', port=80, debug=False)
 

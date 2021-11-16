@@ -6,3 +6,8 @@ sql_db = ''  # the name of the database in the server you're using
 
 # Flask stuff
 secret_key = b''  #encoded string to use as your flask secret key
+
+# Cert stuff for if you're using https
+enable_ssl = False
+cert_file = ''
+cert_key_file = ''
