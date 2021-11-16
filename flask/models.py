@@ -7,9 +7,11 @@ from config import sql_host, sql_user, sql_pass, sql_db
 import bcrypt
 from functools import wraps
 from flask import abort, session
+import datetime
 
 
 users = dict()
+log_file = 'flask_log.txt'
 
 
 def ensure_auth_level(perm_needed):
@@ -63,6 +65,11 @@ def retrieve_db_query(query, params=None):
     names = [c[0] for c in cursor.description]
     conn.close()
     return results, names
+
+
+def log(message):
+    with open(log_file, 'a') as f:
+        f.write(f'{datetime.datetime.now()}: {message}\n')
 
 
 class User():

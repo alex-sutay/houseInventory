@@ -4,7 +4,7 @@ import mysql.connector
 from mysql.connector import Error
 from config import sql_host, sql_user, sql_pass, sql_db, secret_key, \
         enable_ssl, cert_file, cert_key_file
-from models import retrieve_db_query, execute_db_query, User, users, ensure_auth_level, \
+from models import retrieve_db_query, execute_db_query, User, users, ensure_auth_level, log, \
         LoginForm, MakeUserForm, ChangePassForm, EditItemForm, EditUserForm
 
 
@@ -47,6 +47,7 @@ def all_items():
             if form.update(request.args.get('id', type=int)):
                 flash('Item Updated!')
                 form = None
+                log(f'User {session["user"]} edited an item from IP {request.remote_addr}')
             else:
                 flash('Item edit failed')
         elif action == 'create':
@@ -54,11 +55,13 @@ def all_items():
             if form.insert():
                 flash('Item Created')
                 form = None
+                log(f'User {session["user"]} created a new item from IP {request.remote_addr}')
             else:
                 flash('Item creation failed')
         elif action == 'delete':
             execute_db_query('DELETE FROM Item WHERE itemID = %s', (request.args.get('id', type=int),))
             flash('Item removed')
+            log(f'User {session["user"]} removed an item from IP {request.remote_addr}')
         else:
             item_id = request.args.get('id', type=int)
             flash(f'got undefined action <{action}> with id <{item_id}>.')
@@ -95,8 +98,10 @@ def login_post():
             users[form.user.get_id()] = form.user
             session['user'] = form.user.get_id()
             flash('login successful')
+            log(f'User {session["user"]} logged in from IP {request.remote_addr}')
             return redirect(url_for('index'))
         else:
+            log(f'Failed login attempt from IP {request.remote_addr}')
             flash('login failed')
     return render_template('login.html', form=form)
 
@@ -111,11 +116,13 @@ def manage_users_post():
         if action == 'create':
             if make_form.validate():
                 flash('User created successfully')
+                log(f'User {session["user"]} has created a new user from IP {request.remote_addr}')
             else:
                 flash('User creation failed')
         elif action == 'delete':
             execute_db_query('DELETE FROM Account WHERE userID = %s', (request.args.get('id', type=int),))
             flash('User removed')
+            log(f'User {session["user"]} has deleted a user from IP {request.remote_addr}')
         elif action == 'spawn_edit':
             user_id = request.args.get('id')
             res, names = retrieve_db_query('SELECT * FROM Account WHERE userID = %s', (user_id,))
@@ -125,6 +132,7 @@ def manage_users_post():
             edit_form = EditUserForm()
             if edit_form.update(request.args.get('id', type=int)):
                 flash('User Updated!')
+                log(f'User {session["user"]} has updated a user from IP {request.remote_addr}')
                 edit_form = None
             else:
                 flash('User update failed')
@@ -138,6 +146,7 @@ def manage_users_post():
 @app.route('/logout')
 @ensure_auth_level(3)
 def logout():
+    log(f'User {session["user"]} has logged out from IP {request.remote_addr}')
     users.pop(session['user'])
     session.pop('user')
     return redirect(url_for('index'))
@@ -149,21 +158,25 @@ def change_pass_post():
     form = ChangePassForm(users[session['user']])
     if request.method == 'POST' and form.validate():
         flash('Password updated')
+        log(f'User {session["user"]} changed their password from IP {request.remote_addr}')
     return render_template('changepass.html', form=form)
 
 
 @app.errorhandler(401)
 def page_not_found(e):
+    log(f'IP address {request.remote_addr} got a 401 error accessing {request.url}')
     return render_template('401.html'), 401
 
 
 @app.errorhandler(404)
 def page_not_found(e):
+    log(f'IP address {request.remote_addr} got a 404 error accessing {request.url}')
     return render_template('404.html'), 404
 
 
 @app.errorhandler(500)
 def page_not_found(e):
+    log(f'IP address {request.remote_addr} got a 500 error accessing {request.url}')
     return render_template('500.html'), 500
 
 
